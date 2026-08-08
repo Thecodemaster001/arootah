@@ -19,7 +19,7 @@
     "demo:malformed": "npm run demo:reset && TRIAGE_FAIL_IDS=inb-005 TRIAGE_FAIL_MODE=malformed next dev"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.116.0",
+    "@anthropic-ai/sdk": "^1.6.0",
     "next": "^16.4.5",
     "openai": "^7.53.0",
     "react": "^19.3.1",

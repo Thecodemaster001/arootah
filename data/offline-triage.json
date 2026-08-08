@@ -1,0 +1,90 @@
+{
+  "inb-001": {
+    "summary": "Founder with about $8M from a business sale wants tax-efficient planning and a family office.",
+    "category": "prospect",
+    "priority": "high",
+    "next_action": "Book an intro call with a senior advisor and ask for the sale closing date.",
+    "confidence": "high",
+    "rationale": "Large qualified opportunity that goes cold if the firm is slow to respond."
+  },
+  "inb-002": {
+    "summary": "Existing client needs an updated portfolio statement for a mortgage lender by Friday.",
+    "category": "existing_client",
+    "priority": "high",
+    "next_action": "Generate the current statement and send it to the client before Friday.",
+    "confidence": "high",
+    "rationale": "Self-identified client with an explicit deadline inside the week."
+  },
+  "inb-003": {
+    "summary": "Analytics software vendor asks for a 20-minute demo next week.",
+    "category": "vendor",
+    "priority": "low",
+    "next_action": "Forward to operations to decide whether a demo is worth scheduling.",
+    "confidence": "high",
+    "rationale": "Sales outreach with no cost to waiting."
+  },
+  "inb-004": {
+    "summary": "Recruiter on LinkedIn pitches a senior role at an unnamed client.",
+    "category": "recruiting",
+    "priority": "low",
+    "next_action": "Archive unless the firm is open to this kind of outreach.",
+    "confidence": "high",
+    "rationale": "Employment outreach to an individual, not advisory business."
+  },
+  "inb-005": {
+    "summary": "Client disputes an unexplained fee on his last statement and wants a call today.",
+    "category": "existing_client",
+    "priority": "high",
+    "next_action": "Pull the fee line from his last statement and call him back today.",
+    "confidence": "high",
+    "rationale": "Complaint from a current client with a same-day callback request."
+  },
+  "inb-006": {
+    "summary": "Early-stage individual asks about account minimums and how fees work.",
+    "category": "prospect",
+    "priority": "medium",
+    "next_action": "Reply with the minimum and fee schedule and offer an intro call.",
+    "confidence": "high",
+    "rationale": "Genuine inbound interest with no stated deadline."
+  },
+  "inb-007": {
+    "summary": "Small RIA proposes a two-way referral arrangement for out-of-scope clients.",
+    "category": "partner",
+    "priority": "medium",
+    "next_action": "Ask Cedar Ridge Wealth for their client profile and set up a partner call.",
+    "confidence": "high",
+    "rationale": "An ongoing firm-to-firm arrangement, worth handling this week."
+  },
+  "inb-008": {
+    "summary": "Automated Monday market newsletter.",
+    "category": "noise",
+    "priority": "low",
+    "next_action": "No action; consider filtering this sender.",
+    "confidence": "high",
+    "rationale": "Automated digest with an unsubscribe link and no ask."
+  },
+  "inb-009": {
+    "summary": "Sender follows up on an earlier conversation and asks for next steps.",
+    "category": "ambiguous",
+    "priority": "low",
+    "next_action": "Search the CRM for Sam Cho to find the original thread before replying.",
+    "confidence": "low",
+    "rationale": "Readable, but no thread, organisation or stated ask to route it by."
+  },
+  "inb-012": {
+    "summary": "Existing client wants to schedule the quarterly review in the next few weeks.",
+    "category": "existing_client",
+    "priority": "medium",
+    "next_action": "Offer the client three morning slots in the next two weeks.",
+    "confidence": "high",
+    "rationale": "Routine client request without a hard deadline."
+  },
+  "inb-013": {
+    "summary": "Referral from client Dana Whitfield wants comprehensive family planning and an intro call.",
+    "category": "prospect",
+    "priority": "medium",
+    "next_action": "Schedule an intro call and note the referral on Dana Whitfield's record.",
+    "confidence": "high",
+    "rationale": "Referred by a current client but not yet a client, so prospect."
+  }
+}

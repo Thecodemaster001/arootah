@@ -59,6 +59,11 @@ function loadEnvLocal() {
 const { found: usedEnvFile, overrides } = loadEnvLocal();
 const provider = (process.env.LLM_PROVIDER || "openai").toLowerCase();
 
+if (provider === "offline") {
+  console.log("\nThe offline provider answers from data/offline-triage.json; there is no key or network to check.");
+  process.exit(0);
+}
+
 const keyName = provider === "anthropic" ? "ANTHROPIC_API_KEY" : "OPENAI_API_KEY";
 const key = process.env[keyName];
 

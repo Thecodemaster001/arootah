@@ -7,7 +7,7 @@
  * every response with zod regardless of which adapter produced it.
  */
 export interface Provider {
-  readonly name: "openai" | "anthropic";
+  readonly name: "openai" | "anthropic" | "offline";
   readonly model: string;
   /** Returns parsed JSON, still unvalidated. Throws on transport or API failure. */
   complete(prompt: Prompt, signal?: AbortSignal): Promise<unknown>;

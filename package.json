@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "demo:reset": "rm -f data/triage.json",
+    "demo:offline": "npm run demo:reset && LLM_PROVIDER=offline next dev",
     "demo:error": "npm run demo:reset && TRIAGE_FAIL_IDS=inb-005 TRIAGE_FAIL_MODE=api next dev",
     "demo:ratelimit": "npm run demo:reset && TRIAGE_FAIL_IDS=inb-005 TRIAGE_FAIL_MODE=rate-limit next dev",
     "demo:malformed": "npm run demo:reset && TRIAGE_FAIL_IDS=inb-005 TRIAGE_FAIL_MODE=malformed next dev"

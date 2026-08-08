@@ -18,7 +18,8 @@ export function anthropicProvider(): Provider {
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set (see .env.example)");
 
   const model = process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
-  const client = new Anthropic({ apiKey });
+  // Retry policy lives in triage.ts; see the note in openai.ts.
+  const client = new Anthropic({ apiKey, maxRetries: 0 });
 
   return {
     name: "anthropic",
@@ -41,6 +42,9 @@ export function anthropicProvider(): Provider {
 
         if (response.stop_reason === "refusal") {
           throw new Error("Model declined to classify this message");
+        }
+        if (response.stop_reason === "max_tokens") {
+          throw new Error("Response truncated before the model finished the object");
         }
 
         const text = response.content.find((block) => block.type === "text");

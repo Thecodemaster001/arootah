@@ -19,7 +19,9 @@ export function openaiProvider(): Provider {
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set (see .env.example)");
 
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
-  const client = new OpenAI({ apiKey });
+  // Retry policy lives in triage.ts. The SDK's own retries (2 by default) would
+  // multiply it and re-send quota 429s that classifyStatus marks permanent.
+  const client = new OpenAI({ apiKey, maxRetries: 0 });
 
   return {
     name: "openai",

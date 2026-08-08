@@ -9,6 +9,21 @@ type Props = {
   onRetry: () => void;
 };
 
+// A fixed zone keeps the server render and the browser hydration identical;
+// the runtime's local zone differs between the two and React flags the mismatch.
+const RECEIVED_FORMAT = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "America/New_York",
+  timeZoneName: "short",
+});
+
+export function formatReceived(iso: string): string {
+  return RECEIVED_FORMAT.format(new Date(iso));
+}
+
 function Sender({ message }: { message: InboundMessage }) {
   const org = normalizeOrg(message.from_org);
   const name = message.from_name.trim();
@@ -33,12 +48,7 @@ export function MessageCard({ message, record, busy, onRetry }: Props) {
           </p>
           <p className="mt-0.5 text-xs text-stone-500">
             <Sender message={message} /> · {message.channel} ·{" "}
-            {new Date(message.received_at).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
-            })}
+            <time dateTime={message.received_at}>{formatReceived(message.received_at)}</time>
           </p>
         </div>
 

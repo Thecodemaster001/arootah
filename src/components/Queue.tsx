@@ -30,7 +30,7 @@ export function Queue({ messages, initialTriage }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, force }),
       });
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         // A setup failure (missing key, unknown provider) is surfaced once at
         // the top rather than duplicated onto every row.

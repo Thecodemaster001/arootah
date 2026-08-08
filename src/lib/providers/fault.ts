@@ -32,7 +32,7 @@ function parseMode(raw: string | undefined): FaultMode {
   return mode as FaultMode;
 }
 
-function inject(mode: FaultMode, id: string): never | unknown {
+function inject(mode: FaultMode, id: string): unknown {
   switch (mode) {
     case "api":
       throw new Error(`Injected fault (${id}): provider returned 500 Internal Server Error`);

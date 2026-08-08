@@ -155,7 +155,8 @@ export async function triageAll(
     }
   };
 
-  const workers = Array.from({ length: Math.min(concurrency, messages.length) }, worker);
+  const limit = Math.max(1, Math.floor(concurrency) || 1);
+  const workers = Array.from({ length: Math.min(limit, messages.length) }, worker);
   await Promise.all(workers);
   return records;
 }

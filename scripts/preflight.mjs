@@ -11,7 +11,8 @@
 import { readFileSync } from "node:fs";
 
 /**
- * Must mirror src/lib/env.ts exactly. Keep FILE_OWNED_KEYS in sync with it.
+ * Must mirror src/lib/env.ts exactly. Keep FILE_OWNED_KEYS and the line parser
+ * in sync with it.
  *
  * The app makes .env.local authoritative for credentials, overriding whatever
  * the shell exports. Preflight has to resolve config the same way or it reports
@@ -37,13 +38,13 @@ function loadEnvLocal() {
     return { found: false, overrides };
   }
 
-  for (const line of contents.split("\n")) {
-    if (line.trimStart().startsWith("#")) continue;
-    const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+  for (const line of contents.split(/\r?\n/)) {
+    const match = line.match(/^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*?)\s*$/);
     if (!match) continue;
     found = true;
     const [, key, rawValue] = match;
-    const value = rawValue.replace(/^["']|["']$/g, "");
+    const quoted = rawValue.match(/^(["'`])(.*?)\1\s*(?:#.*)?$/);
+    const value = quoted ? quoted[2] : rawValue.split("#")[0].trim();
 
     if (!FILE_OWNED_KEYS.includes(key)) continue;
     if (process.env[key] !== undefined && process.env[key] !== value) {
@@ -74,7 +75,8 @@ if (!key) {
   console.error(`\n${keyName} is not set. Copy .env.example to .env.local and add it.`);
   process.exit(1);
 }
-console.log(`${keyName.padEnd(14)}: ${key.slice(0, 8)}…${key.slice(-4)}  (${key.length} chars)`);
+const masked = key.length > 16 ? `${key.slice(0, 6)}…${key.slice(-4)}` : "[REDACTED]";
+console.log(`${keyName.padEnd(14)}: ${masked}  (${key.length} chars)`);
 
 const model =
   provider === "anthropic"
@@ -85,7 +87,7 @@ console.log(`model         : ${model}\n`);
 try {
   if (provider === "anthropic") {
     const { default: Anthropic } = await import("@anthropic-ai/sdk");
-    const client = new Anthropic({ apiKey: key });
+    const client = new Anthropic({ apiKey: key, maxRetries: 0 });
     const response = await client.messages.create({
       model,
       max_tokens: 16,
@@ -95,7 +97,7 @@ try {
     console.log(`OK — model replied: ${JSON.stringify(text?.text ?? "")}`);
   } else {
     const { default: OpenAI } = await import("openai");
-    const client = new OpenAI({ apiKey: key });
+    const client = new OpenAI({ apiKey: key, maxRetries: 0 });
     const response = await client.chat.completions.create({
       model,
       messages: [{ role: "user", content: "Reply with the single word: ok" }],

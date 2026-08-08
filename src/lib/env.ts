@@ -25,12 +25,22 @@ export type EnvOverride = { key: string; shadowed: boolean };
 
 let applied: EnvOverride[] | null = null;
 
-function parse(contents: string): Map<string, string> {
+const LINE = /^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*?)\s*$/;
+const QUOTED = /^(["'`])(.*?)\1\s*(?:#.*)?$/;
+
+/**
+ * Reads values the way @next/env (dotenv) does, so this override never applies
+ * a different value from the one Next itself would have loaded: optional
+ * `export`, matching quotes kept verbatim, and `#` ending an unquoted value.
+ * scripts/preflight.mjs carries a copy of this parser and must stay in step.
+ */
+export function parseEnvFile(contents: string): Map<string, string> {
   const values = new Map<string, string>();
-  for (const line of contents.split("\n")) {
-    const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
-    if (!match || line.trimStart().startsWith("#")) continue;
-    values.set(match[1], match[2].replace(/^["']|["']$/g, ""));
+  for (const line of contents.split(/\r?\n/)) {
+    const match = line.match(LINE);
+    if (!match) continue;
+    const quoted = match[2].match(QUOTED);
+    values.set(match[1], quoted ? quoted[2] : match[2].split("#")[0].trim());
   }
   return values;
 }
@@ -46,7 +56,7 @@ export function loadLocalEnv(): EnvOverride[] {
 
   let values: Map<string, string>;
   try {
-    values = parse(readFileSync(path.join(process.cwd(), ".env.local"), "utf8"));
+    values = parseEnvFile(readFileSync(path.join(process.cwd(), ".env.local"), "utf8"));
   } catch {
     applied = [];
     return applied;

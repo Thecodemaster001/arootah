@@ -42,7 +42,6 @@ export function normalizeOrg(raw: string): string {
  */
 export function readableText(raw: string): string {
   return raw
-    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, " ")
     .replace(/\uFFFD/g, " ")
     .replace(/\s+/g, " ")

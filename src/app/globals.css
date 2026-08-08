@@ -1,9 +1,38 @@
 @import "tailwindcss";
 
+/*
+ * Ledger palette: warm paper, ink, and a deep green for the one primary
+ * action. Priority colours are reserved for priority. Fonts are system
+ * stacks, so the page makes no font requests.
+ */
+@theme {
+  --font-sans: ui-sans-serif, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+
+  --color-paper: #f7f5f0;
+  --color-ink: #1f1d1a;
+  --color-ledger-50: #eef5f1;
+  --color-ledger-600: #2f6b52;
+  --color-ledger-700: #23573f;
+  --color-ledger-800: #1b4532;
+}
+
 :root {
   color-scheme: light;
 }
 
 body {
-  @apply bg-stone-50 text-stone-900 antialiased;
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ledger-600);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

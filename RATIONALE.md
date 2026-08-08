@@ -1,6 +1,6 @@
 # Engineering Rationale
 
-Answers to §4 of the brief, specific to what is in this repo.
+The reasoning behind the design, specific to what is in this repo.
 
 ---
 
@@ -65,7 +65,8 @@ Both vendors are held to a byte-identical contract because it is generated, not
 transcribed twice.
 
 **And the guarantee is not trusted.** Every response is re-parsed with the same
-zod object in [`triage.ts`](src/lib/triage.ts) (`TriageResult.safeParse`). The
+zod object in [`triage.ts`](src/lib/triage.ts) (`ModelTriageResult.safeParse`,
+which is `TriageResult` with `unprocessable` removed from the enum). The
 provider's enforcement is a fast path, not a reason to skip checking — schema
 enforcement can still hand back a *truncated* object if the response hits a token
 ceiling, which is well-formed and wrong. Both adapters check for that explicitly
@@ -74,14 +75,17 @@ Anthropic).
 
 **When it comes back malformed:** `safeParse` fails, and the message becomes a
 record with `status: "error"` carrying the zod issue paths — it does not throw.
-That matters because of the type in `schema.ts`: `TriageRecord` is a
-discriminated union over `ok | unprocessable | error`, so an API failure is a
+That matters because of the type in `schema.ts`: `TriageRecord` is tagged
+with a `status` of `ok | unprocessable | error`, so an API failure is a
 *value the UI renders* rather than an exception that takes out the request.
-`MessageCard.tsx` renders it as a red card with the reason and a retry button.
+`MessageCard.tsx` renders it as a red card with the reason and a retry button,
+ranked above everything else because its real priority is unknown.
 
 **Retry.** `completeWithRetry` in `triage.ts` retries only `RetryableError`, with
 exponential backoff plus jitter so a rate-limited batch does not resynchronise
-and collide again on the next attempt.
+and collide again on the next attempt. It is the only retry layer: both SDK
+clients run with `maxRetries: 0`, because their built-in retries would multiply
+it and re-send quota errors that `classifyStatus` deliberately treats as final.
 
 ## c. Where the model was wrong
 
@@ -235,3 +239,24 @@ details and go to a third-party API. That is a procurement and data-agreement
 question (zero-retention terms, and confirming the firm's client agreements
 permit it) more than an engineering one, but it should be settled before this
 touches a real inbox rather than after.
+
+## f. Beyond the local store
+
+**How I'd model this in Airtable.** Two tables. **Messages** holds the raw
+inbound fields (`id`, `received_at`, `channel`, `from_name`, `from_org`,
+`subject`, `body`) plus the triage output as single-select fields for `category`
+and `priority` and long-text for `summary` and `next_action`. **Contacts** holds
+one row per sender, keyed on email or name+org, with the relationship type. A
+`Messages → Contacts` link field is the one linked relationship: it turns "Nathan
+Brooks was referred by Dana Whitfield" into a real edge, so an associate opening
+a prospect immediately sees the referring client and the existing thread history
+rather than re-deriving it from message text. Categories as single-selects rather
+than free text is what makes the priority view groupable.
+
+**One n8n automation I'd add.** Trigger: new record in `Messages` where
+`priority = high` and `status = ok`. Action: post to an `#inbox-urgent` Slack
+channel with the summary, the next action, and a deep link to the Airtable row.
+High priority is defined as "money or trust is at risk within ~24 hours", so the
+alert is only useful if it is rare; that definition is what keeps the channel
+from being ignored. I would deliberately *not* auto-reply to senders: the whole
+design assumes a human confirms before anything leaves the building.

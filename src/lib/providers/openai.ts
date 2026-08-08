@@ -14,14 +14,17 @@ const DEFAULT_MODEL = "gpt-5";
  * `temperature` is deliberately unset: reasoning models reject any non-default
  * value, and determinism here comes from a tight schema, not from sampling.
  */
-export function openaiProvider(): Provider {
+type ClientOverrides = Pick<NonNullable<ConstructorParameters<typeof OpenAI>[0]>, "fetch">;
+
+/** `overrides.fetch` lets tests drive the real SDK against a fake transport. */
+export function openaiProvider(overrides: ClientOverrides = {}): Provider {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set (see .env.example)");
 
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
   // Retry policy lives in triage.ts. The SDK's own retries (2 by default) would
   // multiply it and re-send quota 429s that classifyStatus marks permanent.
-  const client = new OpenAI({ apiKey, maxRetries: 0 });
+  const client = new OpenAI({ apiKey, maxRetries: 0, ...overrides });
 
   return {
     name: "openai",

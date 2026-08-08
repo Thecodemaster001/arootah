@@ -9,6 +9,8 @@
     "start": "next start",
     "preflight": "node scripts/preflight.mjs",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "demo:reset": "rm -f data/triage.json",
     "demo:error": "npm run demo:reset && TRIAGE_FAIL_IDS=inb-005 TRIAGE_FAIL_MODE=api next dev",
     "demo:ratelimit": "npm run demo:reset && TRIAGE_FAIL_IDS=inb-005 TRIAGE_FAIL_MODE=rate-limit next dev",
@@ -28,6 +30,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "tailwindcss": "^4.1.14",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
   }
 }

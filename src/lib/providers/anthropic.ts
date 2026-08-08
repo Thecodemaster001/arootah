@@ -13,13 +13,16 @@ const DEFAULT_MODEL = "claude-opus-5";
  * thinking plus the response, which is why it is far larger than the ~150
  * tokens of JSON we actually want back.
  */
-export function anthropicProvider(): Provider {
+type ClientOverrides = Pick<NonNullable<ConstructorParameters<typeof Anthropic>[0]>, "fetch">;
+
+/** `overrides.fetch` lets tests drive the real SDK against a fake transport. */
+export function anthropicProvider(overrides: ClientOverrides = {}): Provider {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set (see .env.example)");
 
   const model = process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
   // Retry policy lives in triage.ts; see the note in openai.ts.
-  const client = new Anthropic({ apiKey, maxRetries: 0 });
+  const client = new Anthropic({ apiKey, maxRetries: 0, ...overrides });
 
   return {
     name: "anthropic",

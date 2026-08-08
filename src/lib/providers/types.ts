@@ -20,7 +20,7 @@ export type Prompt = {
   user: string;
 };
 
-/** Marks failures worth retrying — rate limits and transient server errors. */
+/** Marks failures worth retrying: rate limits, transient server errors, dropped connections. */
 export class RetryableError extends Error {
   constructor(message: string, readonly status?: number) {
     super(message);

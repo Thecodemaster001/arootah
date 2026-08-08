@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { TRIAGE_JSON_SCHEMA } from "../schema";
-import { classifyStatus, type Prompt, type Provider } from "./types";
+import { classifyStatus, RetryableError, type Prompt, type Provider } from "./types";
 
 const DEFAULT_MODEL = "claude-opus-5";
 
@@ -53,11 +53,13 @@ export function anthropicProvider(): Provider {
         }
         return JSON.parse(text.text);
       } catch (error) {
+        if (error instanceof Anthropic.APIConnectionError) {
+          throw new RetryableError(`Anthropic connection failed: ${error.message}`);
+        }
         if (error instanceof Anthropic.APIError) {
-          const code = typeof error.error === "object" && error.error !== null && "type" in error.error
-            ? String((error.error as { type?: unknown }).type)
-            : undefined;
-          throw classifyStatus(error.status, `Anthropic ${error.status}: ${error.message}`, code);
+          // `error.error` is the whole body ({ type: "error", error: {...} });
+          // the SDK lifts the specific error type into `error.type`.
+          throw classifyStatus(error.status, `Anthropic ${error.status}: ${error.message}`, error.type);
         }
         throw error;
       }

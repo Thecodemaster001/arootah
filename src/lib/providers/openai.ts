@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { TRIAGE_JSON_SCHEMA } from "../schema";
-import { classifyStatus, type Prompt, type Provider } from "./types";
+import { classifyStatus, RetryableError, type Prompt, type Provider } from "./types";
 
 const DEFAULT_MODEL = "gpt-5";
 
@@ -55,6 +55,9 @@ export function openaiProvider(): Provider {
 
         return JSON.parse(content);
       } catch (error) {
+        if (error instanceof OpenAI.APIConnectionError) {
+          throw new RetryableError(`OpenAI connection failed: ${error.message}`);
+        }
         if (error instanceof OpenAI.APIError) {
           throw classifyStatus(
             error.status,

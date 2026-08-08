@@ -1,0 +1,16 @@
+.git
+.github
+node_modules
+.next
+out
+coverage
+docs
+tmp
+*.log
+.env
+.env.*
+!.env.example
+data/triage.json
+Dockerfile
+.dockerignore
+.DS_Store
